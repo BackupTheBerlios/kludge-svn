@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kludgeApp xmlns="http://kludge.berlios.de/v1/kludge" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://kludge.berlios.de/v1/kludge kludge.xsd">  
+ <kludgeSources>	   
+  <dumbFileReplayer name="Gen1" url="file:/root/kludge/kludge/examples/try1s.dat">
+   <source name="Gen1a" data_group="Gen1" data_source="Gen1a" autorepeat="true" />
+   <source name="Gen1b" data_group="Gen1" data_source="Gen1b" autorepeat="true" />
+  </dumbFileReplayer> 
+  <dumbFileReplayer name="Gen2" url="file:/root/kludge/kludge/examples/try1s.dat">
+   <source name="Gen2a" data_source="Gen2a" data_group="Gen2"/>
+   <source name="Gen2b" data_source="Gen2b" data_group="Gen2"/>
+  </dumbFileReplayer>
+ </kludgeSources>
+ <kludgeSinks>
+  <kludgeIMap name="Frame1" colormap="JET" minval="-1" x="40" y="50">
+   <sink name="d1" x="5.0" y="5.0" >
+    <source name="Gen1a" group="Gen1"/>
+   </sink>
+   <sink name="d2" x="50.0" y="50.0" >
+    <source name="Gen1b" group="Gen1"/>
+   </sink>
+   <sink name="d3" x="100.0" y="100.0" >
+    <source name="Gen2a" group="Gen2"/>
+   </sink>
+   <image url="file:/root/kludge/kludge/examples/anja02.jpg">
+    0000
+   </image>
+  </kludgeIMap>
+ </kludgeSinks>
+ <kludgeGUI>
+  <providesSinkGroup name="Frame1"/>
+ </kludgeGUI>
+</kludgeApp>

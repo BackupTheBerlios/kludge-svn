@@ -1,0 +1,29 @@
+HDRS = /opt/kde/include /usr/X11R6/include /usr/local/include/cairo ;
+LINKLIBS = -L/opt/kde/lib -lkmdi -lkdeui -lxerces-c -lcairo -lglitz -lglitz-glx ;
+SUFMOC = .moc ;
+C++FLAGS = -O2 -DQT_THREAD_SUPPORT ;
+
+rule Moc
+{
+  DEPENDS $(<) : $(>) ;
+  Clean clean : $(<) ;
+}
+
+actions Moc
+{
+  moc -o $(<) $(>) ;
+}
+
+rule MocEm
+{
+  local _i ;
+    
+  for _i in [ FGristFiles $(<) ]
+  {
+    Moc $(_i:S=$(SUFMOC)) : $(_i) ;
+    DEPENDS obj : $(_i:S=$(SUFMOC)) ;
+  }
+  
+  Clean clean : [ FGristFiles $(_i:S=$(SUFMOC)) ] ;
+}
+				

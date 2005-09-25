@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kludgeApp xmlns="http://kludge.berlios.de/v1/kludge" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://kludge.berlios.de/v1/kludge kludge.xsd">  
+ <kludgeSources>	   
+  <dumbFileReplayer name="Chain1" url="file:/root/owork/dlog/kludge/examples/try2.dat">
+   <source name="T01" data_group="Chain1" data_source="T01">
+    <sink name="l010" group="Frame1"/>
+    <sink name="l011" group="Frame1"/>
+    <sink name="l012" group="Frame1"/>
+    <sink name="l013" group="Frame1"/>
+    <sink name="l014" group="Frame1"/>
+    <sink name="l015" group="Frame1"/>
+    <sink name="l016" group="Frame1"/>
+    <sink name="l017" group="Frame1"/>
+   </source>
+   <source name="T02"  data_group="Chain1" data_source="T02">
+    <sink name="l020" group="Frame1"/>
+    <sink name="l021" group="Frame1"/>
+    <sink name="l022" group="Frame1"/>
+    <sink name="l023" group="Frame1"/>
+    <sink name="l024" group="Frame1"/>
+    <sink name="l025" group="Frame1"/>
+    <sink name="l026" group="Frame1"/>
+    <sink name="l027" group="Frame1"/>
+   </source>   
+   <source name="T03"  data_group="Chain1" data_source="T03">
+    <sink name="l030" group="Frame1"/>
+    <sink name="l031" group="Frame1"/>
+    <sink name="l032" group="Frame1"/>
+    <sink name="l033" group="Frame1"/>
+    <sink name="l034" group="Frame1"/>
+    <sink name="l035" group="Frame1"/>
+    <sink name="l036" group="Frame1"/>
+    <sink name="l037" group="Frame1"/>
+   </source>
+   <source name="T04"  data_group="Chain1" data_source="T04">
+    <sink name="l040" group="Frame1"/>
+    <sink name="l041" group="Frame1"/>
+    <sink name="l042" group="Frame1"/>
+    <sink name="l043" group="Frame1"/>
+    <sink name="l044" group="Frame1"/>
+    <sink name="l045" group="Frame1"/>
+    <sink name="l046" group="Frame1"/>
+    <sink name="l047" group="Frame1"/>
+   </source>   
+   <source name="T05"  data_group="Chain1" data_source="T05">
+    <sink name="l050" group="Frame1"/>
+    <sink name="l051" group="Frame1"/>
+    <sink name="l052" group="Frame1"/>
+    <sink name="l053" group="Frame1"/>
+    <sink name="l054" group="Frame1"/>
+    <sink name="l055" group="Frame1"/>
+    <sink name="l056" group="Frame1"/>
+    <sink name="l057" group="Frame1"/>
+   </source>   
+  </dumbFileReplayer>
+ </kludgeSources>
+ <kludgeSinks>
+  <kludgeIMap name="Frame1" colormap="JET" minval="18" maxval="40" x="40" y="50">
+   <!-- Device 01 -->
+   <sink name="l010" x="10" y="10"  data_offset="0" />
+   <sink name="l011" x="10" y="20"  data_offset="1" />
+   <sink name="l012" x="10" y="30"  data_offset="2" />
+   <sink name="l013" x="10" y="40"  data_offset="3" />
+   <sink name="l014" x="10" y="50"  data_offset="4" />
+   <sink name="l015" x="10" y="60"  data_offset="5" />
+   <sink name="l016" x="10" y="70"  data_offset="6" />
+   <sink name="l017" x="10" y="80"  data_offset="7" />
+   <!-- Device 02 -->
+   <sink name="l020" x="30" y="30"  data_offset="0" />
+   <sink name="l021" x="30" y="40"  data_offset="1" />
+   <sink name="l022" x="30" y="50"  data_offset="2" />
+   <sink name="l023" x="30" y="60"  data_offset="3" />
+   <sink name="l024" x="30" y="70"  data_offset="4" />
+   <sink name="l025" x="30" y="80"  data_offset="5" />
+   <sink name="l026" x="30" y="90"  data_offset="6" />
+   <sink name="l027" x="30" y="100"  data_offset="7" />
+   <!-- Device 03 -->
+   <sink name="l030" x="50" y="50"  data_offset="0" />
+   <sink name="l031" x="50" y="60"  data_offset="1" />
+   <sink name="l032" x="50" y="70"  data_offset="2" />
+   <sink name="l033" x="50" y="80"  data_offset="3" />
+   <sink name="l034" x="50" y="90"  data_offset="4" />
+   <sink name="l035" x="50" y="100"  data_offset="5" />
+   <sink name="l036" x="50" y="110"  data_offset="6" />
+   <sink name="l037" x="50" y="120"  data_offset="7" />
+   <!-- Device 04 -->
+   <sink name="l040" x="70" y="70"  data_offset="0" />
+   <sink name="l041" x="70" y="80"  data_offset="1" />
+   <sink name="l042" x="70" y="90"  data_offset="2" />
+   <sink name="l043" x="70" y="100"  data_offset="3" />
+   <sink name="l044" x="70" y="110"  data_offset="4" />
+   <sink name="l045" x="70" y="120"  data_offset="5" />
+   <sink name="l046" x="70" y="130"  data_offset="6" />
+   <sink name="l047" x="70" y="140"  data_offset="7" />
+   <!-- Device 05 -->
+   <sink name="l050" x="90" y="90"  data_offset="0" />
+   <sink name="l051" x="90" y="100"  data_offset="1" />
+   <sink name="l052" x="90" y="110"  data_offset="2" />
+   <sink name="l053" x="90" y="120"  data_offset="3" />
+   <sink name="l054" x="90" y="130"  data_offset="4" />
+   <sink name="l055" x="90" y="140"  data_offset="5" />
+   <sink name="l056" x="90" y="150"  data_offset="6" />
+   <sink name="l057" x="90" y="160"  data_offset="7" />
+   <image url="file:/root/owork/dlog/kludge/examples/anja02.jpg">
+    0000
+   </image>
+  </kludgeIMap>
+ </kludgeSinks>
+ <kludgeGUI>
+  <providesSinkGroup name="Frame1"/>
+ </kludgeGUI>
+</kludgeApp>

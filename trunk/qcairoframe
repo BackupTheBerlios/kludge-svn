@@ -1,0 +1,158 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef QCAIROFRAME
+#define QCAIROFRAME
+
+#include <qwidget.h>
+#include <qimage.h>
+#include <qmutex.h>
+#include <qptrdict.h>
+#include <kcursor.h>
+
+#include <glitz-glx.h>
+#include <cairo.h>
+#include <cairo-glitz.h>
+
+class CairoItem;
+class QCairoFrame : public QWidget
+{
+  Q_OBJECT;
+      
+  class CairoBack
+  {
+  protected:
+    QCairoFrame *my_cairo_frame;    
+    
+  public:
+    CairoBack(QCairoFrame* parent);
+    
+    virtual void resize(int w, int h) = 0;
+    virtual void update() = 0;
+    virtual void setBackgroundColor(double red, double green, double blue) = 0;
+    virtual void setDefault() = 0;
+    virtual void translateAbs(double tx, double ty) = 0;
+    virtual void translate(double tx, double ty) = 0;
+    virtual void scale(double sx, double sy) = 0;
+    virtual void rotate(double angle) = 0;
+    
+    virtual cairo_surface_t* createImage(const QImage& qimg) = 0;
+    virtual void destroySurface(cairo_surface_t* s) = 0;
+  
+  };
+  
+  class CairoGlitz : public CairoBack, public QWidget
+  {        
+    /* X11 interface */
+    Display *g_disp;
+    int g_win;
+    XSetWindowAttributes xswa;
+    
+    /* Glitz Drawable interface */
+    unsigned long g_drw_fmt_mask;
+    glitz_drawable_format_t g_drw_fmt_templ;    
+    glitz_drawable_format_t *g_drw_fmt;
+    glitz_drawable_t *g_drw;    
+    
+    /* Glitz Surface interface */
+    unsigned long s_f_mask;
+    glitz_format_t s_f_templ;        
+    glitz_format_t *s_fmt;    
+    glitz_surface_t *s;
+    
+    cairo_surface_t *cs;
+    cairo_t *c;
+                
+    glitz_color_t back_color;
+            
+    struct SurfListItem
+    {
+      glitz_buffer_t *g_buf;
+      glitz_surface_t *g_surf;
+      cairo_surface_t *c_surf;
+      
+      ~SurfListItem();
+    };
+    
+    QPtrDict<SurfListItem> surf_list;
+  protected:
+    void paintEvent(QPaintEvent* pe);
+    void resizeEvent(QResizeEvent* re);  
+    
+  public:        
+    CairoGlitz(QCairoFrame* parent=0, const char* name=0);
+    ~CairoGlitz();
+    
+    void update();
+    void resize(int w, int h);    
+    void setBackgroundColor(double red, double green, double blue);
+    void setDefault();
+    void translateAbs(double tx, double ty);
+    void translate(double tx, double ty);
+    void scale(double sx, double sy);
+    void rotate(double angle);
+    
+    cairo_surface_t* createImage(const QImage& qimg);
+    void destroySurface(cairo_surface_t* surf);
+  
+  };
+  
+  /*
+  class CairoX11 : public CairoBack, public QFrame
+  {
+  public:
+  };
+  */  
+  CairoBack *c_target;  
+  QMutex c_target_lock;
+  cairo_t *tmp_c;
+  QPtrList<CairoItem> drw_list;
+  QMutex c_draw_lock;
+    
+  void cairoDraw(cairo_t* v_buf);
+    
+  /* Qt interface */
+  enum {Idle, Pan, Zoom} active_state; // User inflicted states
+  static const double zoom_factor[13];
+  static const unsigned zoom_steps;
+  QCursor saved_cursor;
+  QPoint pan_start_point;
+  QPoint current_offset;
+  unsigned zx, zy;
+  double ra;
+  
+protected:
+  void paintEvent(QPaintEvent* pe);
+  void resizeEvent(QResizeEvent* re);
+  void mousePressEvent(QMouseEvent* me);
+  void mouseMoveEvent(QMouseEvent* me);
+  void mouseReleaseEvent(QMouseEvent* me);
+  void keyPressEvent(QKeyEvent* ke);
+
+public:
+  QCairoFrame(QWidget* parent=0, const char* name=0, WFlags f=0);
+  ~QCairoFrame();
+
+  cairo_t* cairoTarget();
+  cairo_surface_t* createImage(const QImage& qimg);
+  void destroySurface(cairo_surface_t* surf);
+  void appendItem(CairoItem* ci);
+  void removeItem(CairoItem* ci);
+  
+signals:
+  void logMsg(const QString& msg, unsigned level, const QObject* sender);
+};
+
+class CairoItem
+{  
+public: 
+  
+  virtual void cairoAttach(QCairoFrame* cf){};  
+  virtual void cairoDraw(){};  
+  virtual void cairoDetach(){};
+  
+  virtual double x(){ return 0.0; };
+  virtual double y(){ return 0.0; };
+};
+
+#endif // QCAIROFRAME

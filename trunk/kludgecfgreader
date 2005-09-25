@@ -1,0 +1,90 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGECFGREADER
+#define KLUDGECFGREADER
+
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/framework/LocalFileInputSource.hpp>
+#include <qobject.h>
+
+class KludgeCfgReader : public QObject, public xercesc_2_7::DefaultHandler 
+{
+  Q_OBJECT;
+  
+  static const unsigned char z_schema[];          
+  static QByteArray schema_exp;
+  
+  KludgeHubProvider *stored_hub_srv;
+  KludgeHubProvider *my_hub_srv;
+  KludgeSrcGroup *tmp_src_grp;
+  KludgeSinkGroup *tmp_sink_grp;
+  KludgeSink *tmp_sink;
+  KludgeSource *tmp_src;
+  QImage *tmp_img;             
+  QByteArray tmp_data;
+         
+  bool is_good;         
+    
+  void (KludgeCfgReader::*parse_startelement)
+       (const XMLCh* const uri, const XMLCh* const localname,
+        const XMLCh* const qname, const xercesc_2_7::Attributes& attrs);
+  void (KludgeCfgReader::*parse_endelement)
+       (const XMLCh* const uri, const XMLCh* const localname, 
+        const XMLCh* const qname);
+  
+  /*--- Content Parsers ---*/
+  void kludgeAppStart(const XMLCh* const uri, const XMLCh* const localname,
+                      const XMLCh* const qname, 
+                      const xercesc_2_7::Attributes& attrs);
+  void kludgeAppEnd(const XMLCh* const uri, const XMLCh* const localname, 
+                    const XMLCh* const qname);
+  void kludgeSourcesStart(const XMLCh* const uri, const XMLCh* const localname,
+                          const XMLCh* const qname, 
+                          const xercesc_2_7::Attributes& attrs);
+  void kludgeSourcesEnd(const XMLCh* const uri, const XMLCh* const localname, 
+                        const XMLCh* const qname);
+  void kludgeSinksStart(const XMLCh* const uri, const XMLCh* const localname,
+                        const XMLCh* const qname, 
+                        const xercesc_2_7::Attributes& attrs);
+  void kludgeSinksEnd(const XMLCh* const uri, const XMLCh* const localname, 
+                      const XMLCh* const qname);
+  void kludgeGUIStart(const XMLCh* const uri, const XMLCh* const localname,
+                      const XMLCh* const qname, 
+                      const xercesc_2_7::Attributes& attrs);
+  void kludgeGUIEnd(const XMLCh* const uri, const XMLCh* const localname, 
+                    const XMLCh* const qname);
+  
+  /*-----------------------*/
+  void convertAttributes(QDict<QString>& q_attr,
+                         const xercesc_2_7::Attributes& attrs);
+  QImage* loadQImage(const KURL& kurl);
+  
+public:  
+  KludgeCfgReader(KludgeHubProvider& hub_srv, QWidget* parent=0, 
+                  const char* name=0);    
+  ~KludgeCfgReader();
+  
+  void startElement(const XMLCh* const uri, const XMLCh* const localname,
+                    const XMLCh* const qname, 
+                    const xercesc_2_7::Attributes& attrs);
+  void endElement(const XMLCh* const uri, const XMLCh* const localname, 
+                  const XMLCh* const qname);
+  void characters(const XMLCh* const chars, const unsigned int length);
+  
+  void error(const xercesc_2_7::SAXParseException&);
+  void fatalError(const xercesc_2_7::SAXParseException&);
+  
+  bool allOk();
+  
+  xercesc_2_7::MemBufInputSource* getEmbeddedSchema();    
+        
+signals:  
+  void logMsg(const QString& msg, unsigned level, const QObject* sender);
+};
+
+#endif // KLUDGECFGREADER

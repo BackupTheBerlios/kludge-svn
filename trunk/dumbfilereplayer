@@ -1,0 +1,135 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef DUMBFILEREPLAYER
+#define DUMBFILEREPLAYER
+#include "kludgesource"
+
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/framework/LocalFileInputSource.hpp>
+
+#include <kurl.h>
+#include <qpair.h>
+
+
+class DumbFileReplayer : public KludgeSrcGroup
+{
+  Q_OBJECT;
+  
+  class OrdMsgList : public QPtrList<KludgeMsg>
+  {    
+  protected:    
+    int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2);  
+  };
+  
+  class DataReplayer : public KludgeSource
+  {
+    OrdMsgList my_data;    
+    QString sim_group, sim_source;
+    bool autorepeat;    
+    struct timeval base_delta;
+    QPair<struct timeval, struct timeval> data_time_range;
+    KludgeMsg my_msg;
+    
+  public:
+    bool still_good;
+    
+    DataReplayer(DumbFileReplayer* parent, const char* name=0);
+    ~DataReplayer();    
+    void setParams(const QDict<QString>& params);    
+    bool update();        
+    
+    void setDataMsg(KludgeMsg* n_msg);
+    QString& simGroup();
+    QString& simSource();
+    void resetData();        
+  };
+
+  class ReplayerMap
+  {    
+    DumbFileReplayer *mp;  
+    DataReplayer *ng_ns_handler;
+    QDict<DataReplayer> ng_s_handler;
+    QDict<DataReplayer> g_ns_handler;
+    QDict<QDict<DataReplayer> > g_s_handler;              
+  public:      
+    ReplayerMap(DumbFileReplayer* parent);
+    ~ReplayerMap();  
+    
+    DataReplayer* getReplayer(const QString* sim_group, 
+                              const QString* sim_source);
+  };
+      
+  class DumbFileLoader : public xercesc_2_7::DefaultHandler
+  {
+    static const unsigned char z_schema[];
+    static QByteArray schema_exp;
+    
+    void (DumbFileLoader::*parse_startelement)
+         (const XMLCh* const uri, const XMLCh* const localname,
+          const XMLCh* const qname, const xercesc_2_7::Attributes& attrs);
+    void (DumbFileLoader::*parse_endelement)
+         (const XMLCh* const uri, const XMLCh* const localname,
+          const XMLCh* const qname);
+    
+    void kludgeDataStart(const XMLCh* const uri, const XMLCh* const localname,
+                         const XMLCh* const qname, 
+                         const xercesc_2_7::Attributes& attrs);
+    void kludgeDataEnd(const XMLCh* const uri, const XMLCh* const localname,
+                       const XMLCh* const qname);
+    void datumsStart(const XMLCh* const uri, const XMLCh* const localname,
+                     const XMLCh* const qname, 
+                     const xercesc_2_7::Attributes& attrs);
+    void datumsEnd(const XMLCh* const uri, const XMLCh* const localname,
+                   const XMLCh* const qname);
+        
+  
+    ReplayerMap *data_sources; 
+    DataReplayer *cur_src;                
+    QByteArray tmp_data;
+    unsigned data_count;
+    unsigned tmp_data_fill;
+    void convertAttributes(QDict<QString>& q_attr,
+                           const xercesc_2_7::Attributes& attrs);
+      
+  public:    
+    DumbFileLoader(DumbFileReplayer* parent);
+    ~DumbFileLoader();
+    
+    void startElement(const XMLCh* const uri, const XMLCh* const localname,
+                      const XMLCh* const qname,
+                      const xercesc_2_7::Attributes& attrs);
+    void endElement(const XMLCh* const uri, const XMLCh* const localname,
+                    const XMLCh* const qname);
+    void characters(const XMLCh* const chars, const unsigned int length);
+
+    void error(const xercesc_2_7::SAXParseException&);
+    void fatalError(const xercesc_2_7::SAXParseException&);
+    xercesc_2_7::MemBufInputSource* getEmbeddedSchema();
+    
+  };
+  
+  KURL data_url;        
+  bool loadXMLData();
+  bool parseXMLData(const QString& file_name);
+  bool go_on;  
+ 
+protected:
+  void run();
+  KludgeSource* newSource(const char* src_name);
+      
+public:
+  DumbFileReplayer(QObject* parent=0, const char* name=0);
+  ~DumbFileReplayer();
+  
+  void setParams(const QDict<QString>& params);
+
+  void activate();
+  void passivate();  
+};
+
+#endif // DUMBFILEREPLAYER

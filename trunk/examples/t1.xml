@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kludgeApp xmlns="http://kludge.berlios.de/v1/kludge" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://kludge.berlios.de/v1/kludge kludge.xsd">  
+ <kludgeSources>	   
+  <kludgeFGen name="Gen1">
+   <source name="Gen1a" type="sine" freq="0.25" phase="0"/>
+   <source name="Gen1b" type="sine" freq="0.1" phase="0.25"/>
+  </kludgeFGen>
+  <kludgeFGen name="Gen2">
+   <source name="Gen2a" />
+   <source name="Gen2b" />
+  </kludgeFGen>
+ </kludgeSources>
+ <kludgeSinks>
+  <kludgeIMap name="Frame1" colormap="JET" minval="-1" x="40" y="50">
+   <sink name="d1" x="5.0" y="5.0" >
+    <source name="Gen1a" group="Gen1"/>
+   </sink>
+   <sink name="d2" x="50.0" y="50.0" >
+    <source name="Gen1b" group="Gen1"/>
+   </sink>
+   <sink name="d3" x="100.0" y="100.0" >
+    <source name="Gen2a" group="Gen2"/>
+   </sink>
+   <image url="file:/root/owork/dlog/kludge/anja02.jpg">
+    0000
+   </image>
+  </kludgeIMap>
+  <dumbFileWriter name="log1">
+   <sink name="x1" url="file:/root/owork/dlog/kludge/try1.dat">
+    <source name="Gen1a" group="Gen1"/>
+    <source name="Gen1b" group="Gen1"/>
+    <source name="Gen2a" group="Gen2"/>
+   </sink>  
+  </dumbFileWriter>
+ </kludgeSinks>
+ <kludgeGUI>
+  <providesSinkGroup name="Frame1"/>
+ </kludgeGUI>
+</kludgeApp>

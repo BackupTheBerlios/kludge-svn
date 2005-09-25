@@ -1,0 +1,63 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGEMAINWIDGET
+#define KLUDGEMAINWIDGET 
+
+#include <kmdimainfrm.h>
+#include <ktextedit.h>
+#include <kfiledialog.h>
+#include <qmutex.h>
+
+#include "qcairoframe"
+#include "kludgehub"
+
+class KludgeMainWidget : public KMdiMainFrm, public KludgeHubProvider
+{
+  Q_OBJECT;    
+  
+  QDict<KludgeSrcGroup> source_hive;
+  QMutex source_hive_lock;
+
+  QDict<KludgeSinkGroup> sink_hive;
+  QMutex sink_hive_lock;
+                             
+  QCairoFrame *main_area;
+  KMdiChildView *main_area_acc;
+    
+  KTextEdit *msg_area;
+  QMutex msg_area_lock;
+  
+  KFileDialog *file_dlg;
+  KMdiToolViewAccessor *file_dlg_acc;
+    
+  bool parseXMLConfig(const QString& file_name);
+      
+private slots:
+  void setFile();  
+  
+protected:
+  void hubResolve();  
+  
+public:
+  KludgeMainWidget(QCString* init_cfg_url = 0); 
+  ~KludgeMainWidget();
+  
+  QCairoFrame* hasGUI();
+  
+  void hubReset();               
+  void hubRun();
+
+  void regSrcGroup(KludgeSrcGroup* kg);
+  void regSinkGroup(KludgeSinkGroup* kg);
+  KludgeSinkGroup* getSinkGroup(const QString& name);
+  KludgeSrcGroup* getSrcGroup(const QString& name);
+  
+  bool loadXMLConfig(const KURL& kurl);
+           
+public slots:  
+  void logMsg(const QString& msg, unsigned level, const QObject* sender);  
+  
+};
+
+#endif // KLUDGEMAINWIDGET

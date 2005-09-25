@@ -1,0 +1,19 @@
+SubDir TOP ;
+
+Main kludge : 
+            kludge.cc kludge_xml.cc 
+            kludgesource.cc expertdaq.cc dumbfilereplayer.cc
+            kludgesink.cc dumbfilewriter.cc kludgecolormap.cc
+            qcairoframe.cc qcairoframe_glitz.cc ;
+            
+MocEm kludgemainwidget qcairoframe kludgesource kludgesink ;
+MocEm kludgecfgreader expertdaq dumbfilewriter dumbfilereplayer ;
+
+Main embfile : embfile.c ;
+DEPENDS kludgecfgreader.res : embfile ;
+DEPENDS dumbfileloader.res  : embfile ;
+GenFile kludgecfgreader.res : ./embcfgschema.sh kludge.xsd ;
+GenFile dumbfileloader.res  : ./embdataschema.sh kludgedata.xsd ;
+
+
+

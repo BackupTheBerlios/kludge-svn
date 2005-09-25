@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://kludge.berlios.de/v1/kludgedata"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://kludge.berlios.de/v1/kludgedata"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+ <xsd:element name="kludgeData" type="KludgeDataLog"/>
+ 
+ <xsd:complexType name="KludgeDataLog">
+  <xsd:all>
+   <xsd:element name="datums" minOccurs="1" maxOccurs="1">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element name="d" minOccurs="0" maxOccurs="unbounded">
+       <xsd:complexType>
+        <xsd:simpleContent>
+         <xsd:extension base="xsd:base64Binary">
+          <xsd:attribute name="length" type="xsd:nonNegativeInteger" use="required"/>
+          <xsd:attribute name="group" type="xsd:string" use="optional"/>
+          <xsd:attribute name="source" type="xsd:string" use="optional"/>
+         </xsd:extension>
+        </xsd:simpleContent>
+       </xsd:complexType>
+      </xsd:element>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+  </xsd:all>
+ </xsd:complexType>
+</xsd:schema>

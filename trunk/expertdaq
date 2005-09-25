@@ -1,0 +1,59 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef EXPERTDAQ
+#define EXPERTDAQ
+#include "kludgesource"
+/* This is an input driver for Expert DAQ modules by Topsccc, Taiwan */
+
+namespace std_c
+{
+#include <sys/types.h>
+#include <termios.h>
+#include <sched.h>
+#include <errno.h>
+} // namespace std_c
+
+class ExpertDaq : public KludgeSrcGroup
+{
+  Q_OBJECT;
+        
+  class Ex9018p : public KludgeSource
+  {        
+    KludgeMsg my_msg;
+    unsigned dev_addr;
+    struct timeval last_time;    
+    int failure_counter;
+    void parseReply(char* rbuf);
+  public:
+    bool still_good;
+    
+    Ex9018p(QObject* parent=0, const char* name=0);
+    ~Ex9018p();
+    void setParams(const QDict<QString>& params);        
+
+    bool update(FILE* sfd);
+    //bool init(int sfd);
+  };
+  
+  bool go_on;
+  
+  FILE* dev_fd;
+  QString dev_name;
+  struct std_c::termios old_dev_params;
+  unsigned int dev_speed;  
+  
+protected:
+  void run();
+  KludgeSource* newSource(const char* src_name);
+  
+public:
+  ExpertDaq(QObject* parent=0, const char* name=0);
+  ~ExpertDaq();
+  
+  void setParams(const QDict<QString>& params);
+
+  void activate();
+  void passivate();
+};
+#endif // EXPERTDAQ

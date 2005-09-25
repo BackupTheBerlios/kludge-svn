@@ -1,0 +1,34 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGEHUB
+#define KLUDGEHUB 
+
+#include <map>
+#include <qobject.h>
+#include <qobjectlist.h>
+#include <qmutex.h>
+#include <qdict.h>
+
+#include "kludgesource"
+#include "kludgesink"
+
+class KludgeHubProvider
+{
+protected:
+  virtual void hubResolve() = 0;
+  
+public:  
+  virtual void hubReset() = 0;
+  virtual void hubRun() = 0;
+  
+  virtual QCairoFrame* hasGUI() = 0;
+  
+  virtual void regSrcGroup(KludgeSrcGroup* kg) = 0;
+  virtual void regSinkGroup(KludgeSinkGroup* kg) = 0;
+  
+  virtual KludgeSinkGroup* getSinkGroup(const QString& name) = 0;
+  virtual KludgeSrcGroup* getSrcGroup(const QString& name) = 0;
+};
+
+#endif // KLUDGEHUB

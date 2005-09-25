@@ -1,0 +1,33 @@
+// -*- mode: c++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGECOLORMAP
+#define KLUDGECOLORMAP
+
+class KludgeColorMap
+{  
+  typedef enum{RED,GREEN,BLUE} ColorName;
+  
+  static double saturate(double);
+  
+  static double jet(double, ColorName);
+  static double autumn(double, ColorName);
+  static double cool(double, ColorName); 
+  static double gray(double, ColorName);
+  static double hot(double, ColorName);
+  
+  static double (*colormap_tbl[5])(double,ColorName);
+  static const char map_names[5][7];
+  
+public:
+  typedef enum{JET=0,AUTUMN=1,COOL=2,GRAY=3,HOT=4} ColorMapId;  
+  
+  double r(double val, ColorMapId cid=JET);
+  double g(double val, ColorMapId cid=JET);
+  double b(double val, ColorMapId cid=JET);    
+  
+  const char* map2name(ColorMapId map);
+  ColorMapId name2map(const char* mn);
+};
+
+#endif // KLUDGECOLORMAP

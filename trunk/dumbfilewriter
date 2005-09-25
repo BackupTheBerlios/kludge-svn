@@ -1,0 +1,41 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef DUMBFILEWRITER
+#define DUMBFILEWRITER
+
+#include <kurl.h>
+#include <ktempfile.h>
+
+#include "kludgesink"
+
+class DumbFileWriter : public KludgeSinkGroup
+{
+  Q_OBJECT;
+  
+  class FileLogger : public KludgeSink
+  {
+    KTempFile tmp_log;    
+    KURL target_url;
+    QMutex tmp_log_serializer;
+    
+    static const char datafile_header[];
+    static const char datafile_footer[];
+    
+  public:
+    FileLogger(DumbFileWriter* parent, const char* name=0);
+    ~FileLogger();
+    
+    void setParams(const QDict<QString>& params);    
+    
+    void collector(const KludgeMsg& msg);    
+  };
+  
+public:
+  DumbFileWriter(QObject* parent=0, const char* name=0);
+  ~DumbFileWriter();
+
+  KludgeSink* getSink(const QString& name, const QDict<QString>* params=0);
+  
+};
+#endif // DUMBFILEWRITER

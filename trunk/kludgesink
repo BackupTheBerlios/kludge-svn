@@ -1,0 +1,127 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGESINK
+#define KLUDGESINK
+
+#include <qobject.h>
+#include <qmutex.h>
+#include <qdict.h>
+
+#include "qcairoframe"
+#include "kludgecolormap"
+
+class KludgeSinkGroup;
+#include "kludgesource"
+
+class KludgeSink : public QObject
+{
+  Q_OBJECT;
+protected:
+  QDict<QStringList> src_names; 
+  QMutex src_names_lock;
+        
+public:
+  KludgeSink(QObject* parent=0, const char* name=0);  
+  ~KludgeSink();
+  
+  virtual void setParams(const QDict<QString>& params){};
+  virtual void regSrc(const QString& gname, const QString& sname);
+  virtual QStringList* getPending(const QString& gname);
+  
+public slots:
+  virtual void collector(const KludgeMsg& msg) = 0;
+};
+
+class KludgeSinkGroup : public QObject
+{
+  Q_OBJECT;
+  
+protected:
+  QDict<KludgeSink> sink_hive;
+  QMutex sink_hive_lock;
+    
+public:
+  KludgeSinkGroup(QObject* parent=0, const char* name=0);  
+  
+  virtual KludgeSink* getSink(const QString& name,
+                              const QDict<QString>* params=0) = 0;  
+  virtual void makeConnections(KludgeSrcGroup& sgrp);
+  virtual void setParams(const QDict<QString>& params){};
+       
+signals:
+  void logMsg(const QString& msg, unsigned level, const QObject* sender);
+};
+  
+class KludgeIMap : public KludgeSinkGroup, public CairoItem
+{
+  Q_OBJECT;
+  
+  
+  class DrwItem
+  {
+  public:
+    virtual void cairoDraw(cairo_t* v_buf) = 0;    
+    virtual double x() = 0;
+    virtual double y() = 0;    
+  };
+  
+  class Indicator :public KludgeSink, public DrwItem
+  {        
+    double mval;
+    unsigned data_offset;
+    KludgeIMap *my_group;
+    double rx, ry;
+    
+  public:
+    Indicator(KludgeIMap* parent, const char* name=0);
+    ~Indicator();
+    
+    void setParams(const QDict<QString>& params);    
+
+    void cairoDraw(cairo_t* v_buf);
+    double x();
+    double y();    
+      
+    void collector(const KludgeMsg& msg);    
+  };
+        
+  QPtrList<DrwItem> drw_items;  
+  
+  QCairoFrame *cairo_target;
+  cairo_surface_t *back_image;
+  cairo_surface_t *cmap_bar;
+  QImage *tmp_back_image;
+  double w, h;  
+  double rx, ry;
+  
+  double normalize(double val);  
+  
+  double gain, offset;
+  double minval, maxval;
+  QString minval_s, maxval_s;
+  cairo_text_extents_t minval_s_e, maxval_s_e;
+  
+  KludgeColorMap::ColorMapId cur_cmap;
+  KludgeColorMap my_cmap;
+  void drawCmapBar(cairo_t* v_buf, unsigned num_stops, double width, 
+                   double height);
+                            
+public:  
+  KludgeIMap(QObject* parent=0, const char* name=0);
+  ~KludgeIMap();      
+
+  KludgeSink* getSink(const QString& name, const QDict<QString>* params=0);
+  
+  void cairoAttach(QCairoFrame* cf);
+  void cairoDraw();
+  void cairoDetach();
+  
+  void setImage(QImage& qimg);
+  void setParams(const QDict<QString>& params);
+  
+  double x();
+  double y();
+};
+
+#endif // KLUDGESINK

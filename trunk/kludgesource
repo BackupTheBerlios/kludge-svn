@@ -1,0 +1,114 @@
+// -*- C++ -*-
+/* This code is distributed under GNU GPL version >= 2 *
+ *        http://www.gnu.org/licenses/gpl.html         */
+#ifndef KLUDGESOURCE
+#define KLUDGESOURCE
+
+#include <qobject.h>
+#include <qthread.h>
+#include <qdict.h>
+#include <qmemarray.h>
+
+#include <ctime>
+
+class KludgeMsg;
+class KludgeSrcGroup;
+class KludgeSource;
+
+#include "kludgesink"
+
+struct KludgeMsg
+{
+  KludgeSource *origin;
+  
+  struct timeval t;
+  QMemArray<double> v;                   
+};
+
+
+class KludgeSource : public QObject
+{  
+  Q_OBJECT;   
+protected:
+  QDict<QStringList> sink_names; 
+  QMutex sink_names_lock;
+  
+public:
+  KludgeSource(QObject* parent=0, const char* name=0);
+  ~KludgeSource();
+  
+  virtual void setParams(const QDict<QString>& params){};
+  virtual void regSink(const QString& gname, const QString& sname);
+  virtual QStringList* getPending(const QString& gname);    
+    
+signals:
+  void send(const KludgeMsg& msg);  
+};
+
+class KludgeSrcGroup : public QObject, public QThread
+{ 
+  Q_OBJECT; 
+     
+protected:  
+  QDict<KludgeSource> source_hive;
+  QMutex source_hive_lock;
+  
+  virtual void run() = 0;
+  virtual KludgeSource* newSource(const char* src_name) = 0;
+    
+public:
+  KludgeSrcGroup(QObject* parent=0, const char* name=0);
+
+  virtual KludgeSource* getSource(const QString& name, 
+                                  const QDict<QString>* params=0);
+  
+  virtual void makeConnections(KludgeSinkGroup& sgrp);
+  virtual void setParams(const QDict<QString>& params){};
+  
+  virtual void activate() = 0;
+  virtual void passivate() = 0;
+  
+  
+signals:
+  void logMsg(const QString& msg, unsigned level, const QObject* sender);  
+};
+
+class KludgeFGen : public KludgeSrcGroup
+{
+  Q_OBJECT;
+    
+  class WaveGen : public KludgeSource
+  {                
+    struct timeval last_time;
+    double freq;
+    double phase;
+    double (WaveGen::*eval)(struct timeval t);
+    
+    double sine(struct timeval t);
+        
+    KludgeMsg my_msg;        
+  public:
+    WaveGen(QObject* parent=0, const char* name=0);
+    ~WaveGen();
+    void setParams(const QDict<QString>& params);  
+    
+    void update();    
+  };
+    
+  bool go_on;
+  
+protected:  
+  void run();
+  KludgeSource* newSource(const char* src_name);
+  
+public:  
+  KludgeFGen(QObject* parent=0, const char* name=0);
+  ~KludgeFGen();  
+  
+  void activate();
+  void passivate();
+  
+};
+
+
+#endif // KLUDGESOURCE
