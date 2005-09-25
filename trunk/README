@@ -2,13 +2,13 @@ Kludge Version 1 readme
 
 This program is meant to read data from some input (dummy or uart currently)
 and present it on screen (in form of  color-changing  small shapes over some
-image). It can also save  obtained data in xml file (its own format; easy to
-make a  convertor);  later the data can be replayed in kind-of real-time fa-
-sion. Everything  the program does is  described  by configuration files (in 
-XML format, of course). Xercesc-C++ is used  (via SAX api) to read and vali-
-date data  and  configuration  files  against  schemas  (kludgedata.xsd  and 
-kludge.xsd).  You'll need version 2.6 of Xercesc-C++ (www.apache.org/xml) to
-build it correctly.
+image). It can also save  obtained  data in xml file  (its own format  and a
+stupid one - I want to move to HDF some day); later the data can be replayed 
+in kind-of real-time fasion.  Everything the program does (not much) is des-
+cribed by  configuration files (in XML format, of course). Xercesc-C is used 
+(via SAX api) to  read and  validate data  and  configuration  files against 
+schemas  (kludgedata.xsd  and  kludge.xsd).  You'll   need  version  2.7  of 
+Xercesc-C (www.apache.org/xml) to build it correctly.
 Beyond this: the Jamfile and Jamrules are written for Jam/MR Version 2.3.2 (
 I've got it from freetype project  page on  sourceforge). They will probably
 work with other versions (nothing fancy inside).
